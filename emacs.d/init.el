@@ -1,6 +1,7 @@
-;; Override PATH if macOS
+;; Append /usr/bin to exec-path if macOS
+;; This fixes the "git: This shim is internal and must be run via brew." error
 (when (memq window-system '(mac ns x))
-  (setq exec-path '("/Users/oabdellatif/.nix-profile/bin" "/run/current-system/sw/bin" "/nix/var/nix/profiles/default/bin" "/usr/local/bin" "/usr/bin" "/usr/sbin" "/bin" "/sbin")))
+  (setq exec-path (append '("/usr/bin") exec-path)))
 
 ;; Bootstrap straight.el
 (defvar bootstrap-version)
@@ -27,28 +28,17 @@
   (require 'use-package))
 
 (use-package emacs
-  :init
-  (setq ring-bell-function 'flash-mode-line)
-
   :config
   (tool-bar-mode -1)
-  (set-face-attribute 'default nil :font "Fira Code")
-
+  (set-face-attribute 'default nil :font "Fira Code" :height 150)
   :custom
   (visible-bell t)
-  (show-trailing-whitespace t)
-
   (custom-file (concat user-emacs-directory "custom.el")))
 
-(use-package move-text
-  :init
-  (move-text-default-bindings))
-
 (use-package display-line-numbers
-  :straight (:type built-in)
   ;; Show line numbers in prog-mode only
-  :hook (prog-mode . display-line-numbers-mode)
-  :config
+  :hook (prog-mode . display-line-numbers-mode))
+  ;;:config
   ;; Set current line number face to match theme
   ;;(let ((bg (face-attribute 'hl-line :background nil t))
   ;;      (fg (face-attribute 'hl-line :foreground nil t)))
@@ -56,11 +46,22 @@
   ;;                      :background (if (eq bg 'unspecified) "gray30" bg)
   ;;                      :foreground (if (eq fg 'unspecified) "white" fg)
   ;;                      :weight 'bold)))
-  )
 
 (use-package hl-line
-  :straight (:type built-in)
   :hook (prog-mode . hl-line-mode))
+
+(use-package vc
+  :custom
+  (vc-follow-symlinks t))
+
+(use-package whitespace
+  :straight (:type built-in)
+  :custom
+  (show-trailing-whitespace t))
+
+(use-package move-text
+  :init
+  (move-text-default-bindings))
 
 (use-package ligature
   :config
@@ -123,6 +124,8 @@
 
 (use-package doom-modeline
   :ensure t
+  :config
+  (set-face-attribute 'mode-line nil :height 130)
   :init (doom-modeline-mode 1))
 
 (use-package dashboard
