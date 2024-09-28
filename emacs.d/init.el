@@ -1,5 +1,5 @@
 ;; Append /usr/bin to exec-path if macOS
-;; This fixes the "git: This shim is internal and must be run via brew." error
+;; This fixes the "git: This shim is internal and must be run via brew" error
 (when (memq window-system '(mac ns x))
   (setq exec-path (append '("/usr/bin") exec-path)))
 
@@ -20,10 +20,10 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-;; Ensure packages using straight
+;; Automatically invoke straight.el from use-package
 (setq straight-use-package-by-default t)
 
-;; Load macros from use-package
+;; Load use-package macros during compilation
 (eval-when-compile
   (require 'use-package))
 
@@ -36,7 +36,7 @@
   (custom-file (concat user-emacs-directory "custom.el")))
 
 (use-package display-line-numbers
-  ;; Show line numbers in prog-mode only
+  ;; Only show line numbers in programming modes
   :hook (prog-mode . display-line-numbers-mode))
   ;;:config
   ;; Set current line number face to match theme
@@ -55,88 +55,27 @@
   (vc-follow-symlinks t))
 
 (use-package whitespace
-  :straight (:type built-in)
   :custom
   (show-trailing-whitespace t))
-
-(use-package move-text
-  :init
-  (move-text-default-bindings))
-
-(use-package ligature
-  :config
-  ;; Enable the www ligature in every possible major mode
-  (ligature-set-ligatures 't '("www"))
-
-  ;; Enable ligatures in programming modes
-  (ligature-set-ligatures 'prog-mode '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
-                                       ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
-                                       "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
-                                       "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
-                                       "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
-                                       "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
-                                       "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
-                                       "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
-                                       "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
-                                       "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
-
-  (global-ligature-mode 't))
 
 (use-package org
   :straight (:type built-in)
   :hook (org-mode . (lambda ()
-		      (display-line-numbers-mode -1)
-		      (hl-line-mode -1)))
+                      (display-line-numbers-mode -1)
+                      (hl-line-mode -1)))
   :init
-  ;;(setq org-directory "~/OneDrive - Infor/Documents/org-notes")
-  ;;(setq org-agenda-files (directory-files-recursively org-directory "\\.org$"))
-  (setq org-startup-indented t)
-
-  (setq org-agenda-span 1)
-  (setq org-agenda-start-day "+0d")
-  :bind
-  ("C-c a" . org-agenda))
-
-(use-package org-modern
-  :config
-  (add-hook 'org-mode-hook #'org-modern-mode)
-  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-
+  (when (file-directory-p "~/OneDrive - Infor")
+    (setq org-directory "~/OneDrive - Infor/Documents/org-notes")
+    (setq org-agenda-files (directory-files-recursively org-directory "\\.org$")))
+  :bind ("C-c a" . org-agenda)
   :custom
-  (org-modern-star 'replace))
+  (org-startup-indented t)
+  (org-agenda-span 1)
+  (org-agenda-start-day "+0d"))
 
-(use-package doom-themes
-  :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-one t)
-
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  ;;(doom-themes-neotree-config)
-  ;; or for treemacs users
-  ;;(setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
-  ;;(doom-themes-treemacs-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
-
-(use-package doom-modeline
-  :ensure t
-  :config
-  (set-face-attribute 'mode-line nil :height 130)
-  :init (doom-modeline-mode 1))
-
-(use-package dashboard
-  :config
-  (dashboard-setup-startup-hook)
-  :custom
-  (dashboard-startup-banner 'logo)
-
-  (use-package nerd-icons)
-  (dashboard-display-icons-p t)
-  (dashboard-icon-type 'nerd-icons))
+(use-package move-text
+  :init
+  (move-text-default-bindings))
 
 (use-package nix-mode
   :mode "\\.nix\\'")
@@ -294,3 +233,62 @@
   ;; the mode gets enabled right away. Note that this forces loading the
   ;; package.
   (marginalia-mode))
+
+(use-package org-modern
+  :hook
+  (org-mode . org-modern-mode)
+  (org-agenda-finalize . org-modern-agenda)
+  :custom
+  (org-modern-star 'replace))
+
+(use-package doom-themes
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-one t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  ;;(doom-themes-neotree-config)
+  ;; or for treemacs users
+  ;;(setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  ;;(doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
+(use-package doom-modeline
+  :ensure t
+  :config
+  (set-face-attribute 'mode-line nil :height 130)
+  :init (doom-modeline-mode 1))
+
+(use-package dashboard
+  :config
+  (dashboard-setup-startup-hook)
+  :custom
+  (dashboard-startup-banner 'logo)
+
+  (use-package nerd-icons)
+  (dashboard-display-icons-p t)
+  (dashboard-icon-type 'nerd-icons))
+
+(use-package ligature
+  :config
+  ;; Enable the www ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+
+  ;; Enable ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
+                                       ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
+                                       "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
+                                       "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
+                                       "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
+                                       "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
+                                       "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
+                                       "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
+                                       "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
+                                       "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
+
+  (global-ligature-mode 't))
