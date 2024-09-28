@@ -30,9 +30,9 @@
 (use-package emacs
   :config
   (tool-bar-mode -1)
-  (set-face-attribute 'default nil :font "Fira Code" :height 150)
+  (set-face-attribute 'default nil :font "Fira Code")
   :custom
-  (visible-bell t)
+  ;;(visible-bell t)
   (custom-file (concat user-emacs-directory "custom.el")))
 
 (use-package display-line-numbers
@@ -61,8 +61,8 @@
 (use-package org
   :straight (:type built-in)
   :hook (org-mode . (lambda ()
-                      (display-line-numbers-mode -1)
-                      (hl-line-mode -1)))
+                     (display-line-numbers-mode -1)
+                     (hl-line-mode -1)))
   :init
   (when (file-directory-p "~/OneDrive - Infor")
     (setq org-directory "~/OneDrive - Infor/Documents/org-notes")
@@ -71,7 +71,13 @@
   :custom
   (org-startup-indented t)
   (org-agenda-span 1)
-  (org-agenda-start-day "+0d"))
+  (org-agenda-start-day "+0d")
+  :custom-face
+  (org-level-1 ((t (:height 1.2 :bold t))))
+  (org-level-2 ((t (:height 1.1 :bold t))))
+  (org-level-3 ((t (:height 1.0 :bold t))))
+  (org-level-4 ((t (:height 1.0 :bold t))))
+  (org-level-5 ((t (:height 1.0 :bold t)))))
 
 (use-package move-text
   :init
@@ -79,6 +85,9 @@
 
 (use-package nix-mode
   :mode "\\.nix\\'")
+
+(use-package magit
+  :bind ("C-x g" . magit-status))
 
 ;; Enable vertico
 (use-package vertico
@@ -259,9 +268,6 @@
   (doom-themes-org-config))
 
 (use-package doom-modeline
-  :ensure t
-  :config
-  (set-face-attribute 'mode-line nil :height 130)
   :init (doom-modeline-mode 1))
 
 (use-package dashboard
