@@ -29,10 +29,12 @@
 
 (use-package emacs
   :config
+  (menu-bar-mode -1)
   (tool-bar-mode -1)
+  (scroll-bar-mode -1)
   (set-face-attribute 'default nil :font "Fira Code")
   :custom
-  ;;(visible-bell t)
+  (visible-bell t)
   (custom-file (concat user-emacs-directory "custom.el")))
 
 (use-package display-line-numbers
@@ -258,7 +260,7 @@
   (load-theme 'doom-one t)
 
   ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
+  ;;(doom-themes-visual-bell-config)
   ;; Enable custom neotree theme (all-the-icons must be installed!)
   ;;(doom-themes-neotree-config)
   ;; or for treemacs users
@@ -275,26 +277,26 @@
   (dashboard-setup-startup-hook)
   :custom
   (dashboard-startup-banner 'logo)
-
-  (use-package nerd-icons)
   (dashboard-display-icons-p t)
-  (dashboard-icon-type 'nerd-icons))
+  (dashboard-icon-type 'nerd-icons)
+  (dashboard-set-heading-icons t)
+  (dashboard-set-file-icons t))
 
-(use-package ligature
-  :config
-  ;; Enable the www ligature in every possible major mode
-  (ligature-set-ligatures 't '("www"))
+;; (use-package ligature
+;;   :config
+;;   ;; Enable the www ligature in every possible major mode
+;;   (ligature-set-ligatures 't '("www"))
 
-  ;; Enable ligatures in programming modes
-  (ligature-set-ligatures 'prog-mode '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
-                                       ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
-                                       "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
-                                       "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
-                                       "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
-                                       "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
-                                       "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
-                                       "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
-                                       "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
-                                       "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
+;;   ;; Enable ligatures in programming modes
+;;   (ligature-set-ligatures 'prog-mode '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
+;;                                        ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
+;;                                        "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
+;;                                        "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
+;;                                        "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
+;;                                        "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
+;;                                        "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
+;;                                        "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
+;;                                        "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
+;;                                        "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
 
-  (global-ligature-mode 't))
+;;   (global-ligature-mode 't))
