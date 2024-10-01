@@ -32,7 +32,14 @@
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (set-face-attribute 'default nil :font "Fira Code")
+  (set-face-attribute 'default nil
+		      :font "Fira Code"
+		      :height
+		      (cond
+		       ((eq system-type 'darwin)
+			150)
+		       (tp
+			100)))
   :custom
   (visible-bell t)
   (custom-file (concat user-emacs-directory "custom.el")))
@@ -268,6 +275,10 @@
   ;;(doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
+
+(use-package ns-auto-titlebar
+  :if (eq system-type 'darwin)
+  :config (ns-auto-titlebar-mode))
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1))
