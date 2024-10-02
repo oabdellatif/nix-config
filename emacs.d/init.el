@@ -38,9 +38,10 @@
 		      (cond
 		       ((eq system-type 'darwin)
 			150)
-		       (tp
+		       (t
 			100)))
   :custom
+  (scroll-conservatively 101)
   (visible-bell t)
   (custom-file (concat user-emacs-directory "custom.el")))
 
@@ -70,8 +71,9 @@
 (use-package org
   :straight (:type built-in)
   :hook (org-mode . (lambda ()
-                     (display-line-numbers-mode -1)
-                     (hl-line-mode -1)))
+                      (display-line-numbers-mode -1)
+                      (hl-line-mode -1)))
+  :defer 2
   :init
   (when (file-directory-p "~/OneDrive - Infor")
     (setq org-directory "~/OneDrive - Infor/Documents/org-notes")
@@ -96,6 +98,7 @@
   :mode "\\.nix\\'")
 
 (use-package magit
+  :defer 5
   :bind ("C-x g" . magit-status))
 
 ;; Enable vertico
@@ -264,7 +267,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-one t)
+  (load-theme 'doom-wilmersdorf t)
 
   ;; Enable flashing mode-line on errors
   ;;(doom-themes-visual-bell-config)
