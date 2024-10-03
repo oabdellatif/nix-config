@@ -40,6 +40,8 @@
 			150)
 		       (t
 			100)))
+  (when (eq system-type 'darwin)
+    (setq mac-command-modifier 'meta))
   :custom
   (scroll-conservatively 101)
   (visible-bell t)
