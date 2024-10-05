@@ -75,7 +75,7 @@
   :hook (org-mode . (lambda ()
                       (display-line-numbers-mode -1)
                       (hl-line-mode -1)))
-  :defer 2
+  :defer 5
   :init
   (when (file-directory-p "~/OneDrive - Infor")
     (setq org-directory "~/OneDrive - Infor/Documents/org-notes")
@@ -96,11 +96,14 @@
   :init
   (move-text-default-bindings))
 
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
 (use-package nix-mode
   :mode "\\.nix\\'")
 
 (use-package magit
-  :defer 5
+  :defer 10
   :bind ("C-x g" . magit-status))
 
 ;; Enable vertico
@@ -290,9 +293,11 @@
 
 (use-package dashboard
   :config
+  (use-package page-break-lines)
   (dashboard-setup-startup-hook)
   :custom
   (dashboard-startup-banner 'logo)
+  (dashboard-page-separator "\n\f\n")
   (dashboard-display-icons-p t)
   (dashboard-icon-type 'nerd-icons)
   (dashboard-set-heading-icons t)
