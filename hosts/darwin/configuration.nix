@@ -23,6 +23,11 @@
     remapCapsLockToControl = true;
   };
 
+  system.defaults.NSGlobalDomain = {
+    InitialKeyRepeat = 25;
+    KeyRepeat = 2;
+  };
+
   security.pam.enableSudoTouchIdAuth = true;
 
   homebrew = {
@@ -33,6 +38,17 @@
         args = [ "with-native-comp" "with-savchenkovaleriy-big-sur-icon" ];
       }
     ];
+    # casks = [
+    #   "firefox"
+    #   "discord"
+    #   "obsidian"
+    #   "jagex"
+    #   "runelite"
+    #   "keka"
+    #   "nvidia-geforce-now"
+    #   "google-drive"
+    #   }
+    # ];
   };
 
   # Set Git commit hash for darwin-version.
