@@ -1,17 +1,26 @@
 {
-  description = "Example Darwin system flake";
+  description = "Omar's Darwin/NixOS configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nix-darwin.url = "github:LnL7/nix-darwin";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-    
-    home-manager.url = "github:nix-community/home-manager";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
- 
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
-    # Optional: Declarative tap management
     homebrew-bundle = {
       url = "github:homebrew/homebrew-bundle";
       flake = false;
@@ -30,49 +39,57 @@
     };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, nix-homebrew, homebrew-bundle, homebrew-core, homebrew-cask, homebrew-emacs-plus }: {
-    # Build darwin flake using:
-    # $ darwin-rebuild build --flake .#Ksenias-Laptop
-    darwinConfigurations."Ksenias-Laptop" = nix-darwin.lib.darwinSystem {
-      specialArgs = { inherit inputs; };
-      modules = [
-        ./configuration.nix
-        nix-homebrew.darwinModules.nix-homebrew
-        {
-          nix-homebrew = {
-            # Install Homebrew under the default prefix
-            enable = true;
+  outputs = inputs@{ self, nixpkgs, nix-darwin, home-manager, plasma-manager, nix-homebrew, homebrew-bundle, homebrew-core, homebrew-cask, homebrew-emacs-plus }:
+    let
+      user = "oabdellatif";
+    in {
+      darwinConfigurations."Ksenias-Laptop" = nix-darwin.lib.darwinSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./hosts/darwin/configuration.nix
+          nix-homebrew.darwinModules.nix-homebrew
+          {
+            nix-homebrew = {
+              enable = true;
+              enableRosetta = true;
+              user = "${user}";
 
-            # Apple Silicon Only: Also install Homebrew under the default Intel prefix for Rosetta 2
-            enableRosetta = true;
+              taps = {
+                "homebrew/homebrew-bundle" = homebrew-bundle;
+                "homebrew/homebrew-core" = homebrew-core;
+                "homebrew/homebrew-cask" = homebrew-cask;
+                "d12frosted/homebrew-emacs-plus" = homebrew-emacs-plus;
+              };
 
-            # User owning the Homebrew prefix
-            user = "oabdellatif";
-
-            # Optional: Declarative tap management
-            taps = {
-              "homebrew/homebrew-bundle" = homebrew-bundle;
-              "homebrew/homebrew-core" = homebrew-core;
-              "homebrew/homebrew-cask" = homebrew-cask;
-              "d12frosted/homebrew-emacs-plus" = homebrew-emacs-plus;
+              mutableTaps = false;
             };
+          }
+	        home-manager.darwinModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+	            useUserPackages = true;
+	            users.${user} = import ./modules/darwin/home.nix;
+            };
+          }
+        ];
+      };
 
-            # Optional: Enable fully-declarative tap management
-            #
-            # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
-            mutableTaps = false;
-          };
-        }
-	home-manager.darwinModules.home-manager
-	{
-          home-manager.useGlobalPkgs = true;
-	  home-manager.useUserPackages = true;
-	  home-manager.users.oabdellatif = import ./home.nix;
-        }
-      ];
+      darwinPackages = self.darwinConfigurations."Ksenias-Laptop".pkgs;
+
+      nixosConfigurations."nixos" = nixpkgs.lib.nixosSystem {
+        modules = [
+          ./hosts/nixos/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+	            useUserPackages = true;
+              sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
+	            users.${user} = import ./modules/nixos/home.nix;
+            };
+          }
+        ];
+      };
     };
-
-    # Expose the package set, including overlays, for convenience.
-    darwinPackages = self.darwinConfigurations."Ksenias-Laptop".pkgs;
-  };
 }
