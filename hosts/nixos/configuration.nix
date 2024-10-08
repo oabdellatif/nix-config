@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, self, ... }:
 
 {
   imports =
@@ -87,12 +87,24 @@
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
       kdePackages.kate
+      alacritty
     #  thunderbird
     ];
   };
 
   # Install firefox.
   programs.firefox.enable = true;
+
+  stylix = {
+    enable = true;
+    autoEnable = false;
+
+    image = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png";
+    #base16Scheme = "${self}/schemes/doom-wilmersdorf.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-storm.yaml";
+
+    targets.nixos-icons.enable = true;
+  };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;

@@ -1,8 +1,5 @@
-{ config, pkgs, ... }:
+{ config, pkgs, user, ... }:
 
-let
-  user = "oabdellatif";
-in
 {
   imports = [
     ../shared/home.nix

@@ -272,7 +272,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-wilmersdorf t)
+  (load-theme 'doom-oceanic-next t)
 
   ;; Enable flashing mode-line on errors
   ;;(doom-themes-visual-bell-config)
@@ -289,8 +289,10 @@
   :config (ns-auto-titlebar-mode))
 
 (use-package doom-modeline
-  :init (doom-modeline-mode 1))
-
+  :init (doom-modeline-mode 1)
+  :custom
+  (doom-modeline-height 25))
+p
 (use-package dashboard
   :config
   (use-package page-break-lines)
