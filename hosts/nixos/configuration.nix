@@ -16,6 +16,12 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  #boot.initrd.verbose = false;
+  boot.initrd.systemd.enable = true;
+  boot.initrd.systemd.emergencyAccess = true;
+  #boot.consoleLogLevel = 0;
+  #boot.kernelParams = [ "quiet" "udev.log_level=3" ];
+
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -96,7 +102,7 @@
   programs.firefox.enable = true;
 
   stylix = {
-    enable = true;
+    enable = false;
     autoEnable = false;
 
     image = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png";
