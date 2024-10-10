@@ -83,6 +83,7 @@
   :bind ("C-c a" . org-agenda)
   :custom
   (org-startup-indented t)
+  (org-cycle-separator-lines -1)
   (org-agenda-span 1)
   (org-agenda-start-day "+0d")
   :custom-face
