@@ -17,10 +17,10 @@
   programs.plasma = {
     enable = true;
 
-    #workspace = {
-    #  lookAndFeel = "org.kde.breezedark.desktop";
-    #  wallpaper = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png";
-    #};
+    workspace = {
+      lookAndFeel = "org.kde.breezedark.desktop";
+      wallpaper = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png";
+    };
 
     panels = [
       {
@@ -53,15 +53,4 @@
   };
 
   programs.alacritty.enable = true;
-
-  stylix = {
-    fonts.monospace = {
-      name = "Fira Code";
-      package = pkgs.fira-code;
-    };
-    fonts.sizes.terminal = 12;
-
-    targets.kde.enable = true;
-    targets.alacritty.enable = true;
-  };
 }

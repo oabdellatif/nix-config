@@ -19,8 +19,6 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    stylix.url = "github:danth/stylix";
-
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
     homebrew-bundle = {
@@ -41,7 +39,7 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, nix-darwin, home-manager, plasma-manager, stylix, nix-homebrew, homebrew-bundle, homebrew-core, homebrew-cask, homebrew-emacs-plus }:
+  outputs = inputs@{ self, nixpkgs, nix-darwin, home-manager, plasma-manager, nix-homebrew, homebrew-bundle, homebrew-core, homebrew-cask, homebrew-emacs-plus }:
     let
       user = "oabdellatif";
     in {
@@ -80,7 +78,7 @@
       darwinPackages = self.darwinConfigurations."Ksenias-Laptop".pkgs;
 
       nixosConfigurations."nixos" = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit self; };
+        specialArgs = { inherit self user; };
         modules = [
           ./hosts/nixos/configuration.nix
           home-manager.nixosModules.home-manager
@@ -94,7 +92,6 @@
               extraSpecialArgs = { inherit user; };
             };
           }
-          stylix.nixosModules.stylix
         ];
       };
     };
