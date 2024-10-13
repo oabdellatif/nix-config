@@ -17,7 +17,7 @@
     initrd = {
       verbose = false;
       # Replace stage 1 with systemd
-      systemd.enable = true;
+      #systemd.enable = true;
     };
 
     # Enable silent boot
@@ -93,9 +93,10 @@
     description = "Omar Abdellatif";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      kdePackages.kate
       emacs-gtk
       alacritty
+      alacritty-theme
+      kitty
     ];
   };
 
@@ -108,8 +109,9 @@
   # List packages installed in system profile
   environment.systemPackages = with pkgs; [
     vim
-    wget
     git
+    wget
+    kdePackages.kate
   ];
 
   system.stateVersion = "24.05";

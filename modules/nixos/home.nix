@@ -52,5 +52,21 @@
     ];
   };
 
-  programs.alacritty.enable = true;
+  programs.alacritty = {
+    enable = true;
+
+    settings = {
+      import = [
+        "${pkgs.alacritty-theme}/breeze.toml"
+      ];
+
+      font = {
+        normal = {
+          family = "Fira Code";
+          style = "Regular";
+        };
+        size = 10.0;
+      };
+    };
+  };
 }
