@@ -17,7 +17,7 @@
     initrd = {
       verbose = false;
       # Replace stage 1 with systemd
-      #systemd.enable = true;
+      systemd.enable = true;
     };
 
     # Enable silent boot
@@ -94,17 +94,27 @@
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
       emacs-gtk
-      alacritty
-      alacritty-theme
-      kitty
     ];
   };
 
   # Install Firefox
-  programs.firefox.enable = true;
+  programs.firefox = {
+    enable = true;
+
+    policies = {
+      DisablePocket = true;
+      FirefoxHome = {
+        SponsoredTopSites = false;
+      };
+    };
+  };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+
+  fonts.packages = with pkgs; [
+    liberation_ttf
+  ];
 
   # List packages installed in system profile
   environment.systemPackages = with pkgs; [
@@ -112,7 +122,11 @@
     git
     wget
     kdePackages.kate
+    (pkgs.writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
+      [General]
+      background = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png"
+    '')
   ];
 
-  system.stateVersion = "24.05";
+  system.stateVersion = "24.05"; # Don't change this
 }

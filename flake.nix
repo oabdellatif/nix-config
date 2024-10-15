@@ -77,7 +77,7 @@
 
       darwinPackages = self.darwinConfigurations."Ksenias-Laptop".pkgs;
 
-      nixosConfigurations."nixos" = nixpkgs.lib.nixosSystem {
+      nixosConfigurations."nixos" = nixpkgs.lib.nixosSystem rec {
         specialArgs = { inherit self user; };
         modules = [
           ./hosts/nixos/configuration.nix
@@ -89,7 +89,7 @@
               sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
               users.${user} = import ./modules/nixos/home.nix;
 
-              extraSpecialArgs = { inherit user; };
+              extraSpecialArgs = specialArgs;
             };
           }
         ];

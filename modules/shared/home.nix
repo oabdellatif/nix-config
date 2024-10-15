@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, self, ... }:
 
 {
   home.packages = with pkgs; [
@@ -12,12 +12,17 @@
 
   programs.git = {
     enable = true;
+
     userName = "Omar Abdellatif";
     userEmail = "oahabdellatif@gmail.com";
   };
 
-  #home.file.".emacs.d" = {
-  #  source = ./emacs.d;
-  #  recursive = true;
-  #};
+  home.file = {
+    ".emacs.d/init.el" = {
+      source = config.lib.file.mkOutOfStoreSymlink "${self}/emacs.d/init.el";
+    };
+    ".emacs.d/early-init.el" = {
+      source = config.lib.file.mkOutOfStoreSymlink "${self}/emacs.d/early-init.el";
+    };
+  };
 }
