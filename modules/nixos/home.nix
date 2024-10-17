@@ -70,11 +70,18 @@
     };
   };
 
-  home.file."${config.xdg.configHome}/gtkrc".text = ''
-    include "/run/current-system/sw/share/themes/Breeze/gtk-2.0/gtkrc"
+  home.file = {
+    "${config.xdg.configHome}/gtkrc".text = ''
+      include "/run/current-system/sw/share/themes/Breeze/gtk-2.0/gtkrc"
 
-    gtk-theme-name="Breeze"
-  '';
+      gtk-theme-name="Breeze"
+    '';
+
+    "${config.xdg.configHome}/discoverrc".text = ''
+      [FlatpakSources]
+      Sources=flathub
+    '';
+  };
 
   home.stateVersion = "24.05";
 }

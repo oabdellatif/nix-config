@@ -1,4 +1,4 @@
-{ config, pkgs, self, user, ... }:
+{ config, pkgs, lib, self, user, ... }:
 
 {
   imports = [
@@ -75,6 +75,9 @@
 
     # Enable CUPS for printing
     printing.enable = true;
+
+    # Enable Flatpak
+    flatpak.enable = true;
   };
 
   # Enable PipeWire
@@ -97,15 +100,23 @@
     ];
   };
 
-  # Install Firefox
-  programs.firefox = {
-    enable = true;
+  programs = {
+    # Install Firefox
+    firefox = {
+      enable = true;
 
-    policies = {
-      DisablePocket = true;
-      FirefoxHome = {
-        SponsoredTopSites = false;
+      policies = {
+        DisablePocket = true;
+        FirefoxHome = {
+          SponsoredTopSites = false;
+        };
       };
+    };
+
+    # Enable Steam on x86_64 platforms
+    steam = lib.mkIf pkgs.stdenv.hostPlatform.isx86_64 {
+      enable = true;
+      remotePlay.openFirewall = true;
     };
   };
 
@@ -117,16 +128,29 @@
   ];
 
   # List packages installed in system profile
-  environment.systemPackages = with pkgs; [
-    vim
-    git
-    wget
-    kdePackages.kate
-    (pkgs.writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
-      [General]
-      background = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png"
-    '')
-  ];
+  environment.systemPackages =
+    let
+      sddm-theme-config = pkgs.writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
+        [General]
+        background = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png"
+    '';
+    in
+    with pkgs; [
+      vim
+      wget
+      git
+      kdePackages.kate
+      kdePackages.kdeconnect-kde
+      kdePackages.kaccounts-integration
+      kdePackages.kaccounts-providers
+      kdePackages.signond
+      kdePackages.kio-gdrive
+      kdePackages.discover
+      sddm-theme-config
+      vesktop
+      #heroic
+      obsidian
+    ];
 
   system.stateVersion = "24.05"; # Don't change this
 }
