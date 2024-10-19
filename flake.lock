@@ -17,6 +17,27 @@
         "type": "github"
       }
     },
+    "disko": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1728673344,
+        "narHash": "sha256-O0QVhsj9I/hmcIqJ4qCqFyzvjYL+dtzJP0C5MFd8O/Y=",
+        "owner": "nix-community",
+        "repo": "disko",
+        "rev": "ff0a471763faaaca1859fd6de80f44fa0fce91a6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "latest",
+        "repo": "disko",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -248,6 +269,7 @@
     },
     "root": {
       "inputs": {
+        "disko": "disko",
         "home-manager": "home-manager",
         "homebrew-bundle": "homebrew-bundle",
         "homebrew-cask": "homebrew-cask",

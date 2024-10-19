@@ -1,5 +1,5 @@
 {
-  description = "Omar's Darwin/NixOS configuration";
+  description = "Omar's NixOS/Darwin configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -17,6 +17,11 @@
       url = "github:nix-community/plasma-manager";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
+    };
+
+    disko = {
+      url = "github:nix-community/disko/latest";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
@@ -39,10 +44,30 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, nix-darwin, home-manager, plasma-manager, nix-homebrew, homebrew-bundle, homebrew-core, homebrew-cask, homebrew-emacs-plus }:
+  outputs = inputs@{ self, nixpkgs, nix-darwin, home-manager, plasma-manager, disko, nix-homebrew, homebrew-bundle, homebrew-core, homebrew-cask, homebrew-emacs-plus }:
     let
       user = "oabdellatif";
     in {
+      nixosConfigurations."nixos" = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit self user; };
+        modules = [
+          ./hosts/nixos/configuration.nix
+          #disko.nixosModules.disko
+          #./modules/nixos/disk-config.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
+              users.${user} = import ./modules/nixos/home.nix;
+
+              extraSpecialArgs = { inherit self user; };
+            };
+          }
+        ];
+      };
+
       darwinConfigurations."Ksenias-Laptop" = nix-darwin.lib.darwinSystem {
         specialArgs = { inherit inputs; };
         modules = [
@@ -76,23 +101,5 @@
       };
 
       darwinPackages = self.darwinConfigurations."Ksenias-Laptop".pkgs;
-
-      nixosConfigurations."nixos" = nixpkgs.lib.nixosSystem rec {
-        specialArgs = { inherit self user; };
-        modules = [
-          ./hosts/nixos/configuration.nix
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
-              users.${user} = import ./modules/nixos/home.nix;
-
-              extraSpecialArgs = specialArgs;
-            };
-          }
-        ];
-      };
     };
 }

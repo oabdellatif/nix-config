@@ -16,7 +16,7 @@
 
     initrd = {
       verbose = false;
-      # Replace stage 1 with systemd
+      # Replace scripted stage 1 with systemd
       systemd.enable = true;
     };
 
@@ -24,6 +24,9 @@
     consoleLogLevel = 3;
     kernelParams = [ "quiet" "udev.log_level=3" ];
   };
+
+  # Enable zram swap
+  zramSwap.enable = true;
 
   # Define hostname and enable NetworkManager
   networking = {
@@ -78,6 +81,9 @@
 
     # Enable Flatpak
     flatpak.enable = true;
+
+    # Enable periodic TRIM
+    fstrim.enable = true;
   };
 
   # Enable PipeWire
@@ -139,6 +145,8 @@
       vim
       wget
       git
+      unzip
+      p7zip
       kdePackages.kate
       kdePackages.kdeconnect-kde
       kdePackages.kaccounts-integration
