@@ -52,8 +52,8 @@
         specialArgs = { inherit self user; };
         modules = [
           ./hosts/nixos/configuration.nix
-          #disko.nixosModules.disko
-          #./modules/nixos/disk-config.nix
+          disko.nixosModules.disko
+          ./modules/nixos/disk-config.nix
           home-manager.nixosModules.home-manager
           {
             home-manager = {
