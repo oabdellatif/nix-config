@@ -8,7 +8,7 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   boot = {
-    # Use systemd-boot as the bootloader
+    # Bootloader
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
@@ -16,8 +16,9 @@
 
     initrd = {
       verbose = false;
-      # Replace scripted stage 1 with systemd
+      # Enable systemd in initrd
       systemd.enable = true;
+      services.lvm.enable = true;
     };
 
     # Enable silent boot
@@ -28,7 +29,7 @@
   # Enable zram swap
   zramSwap.enable = true;
 
-  # Define hostname and enable NetworkManager
+  # Define hostname and enable networking
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
@@ -57,16 +58,16 @@
     # Enable X server
     xserver.enable = true;
 
-    # Enable KDE Plasma 6 and SDDM
+    # Enable KDE Plasma 6
     displayManager.sddm = {
       enable = true;
+      wayland.enable = true;
 
       settings = {
         Theme = {
           CursorTheme = "breeze_cursors";
         };
       };
-      wayland.enable = true;
     };
     desktopManager.plasma6.enable = true;
 
@@ -79,14 +80,14 @@
     # Enable CUPS for printing
     printing.enable = true;
 
-    # Enable Flatpak
-    flatpak.enable = true;
-
     # Enable periodic TRIM
     fstrim.enable = true;
+
+    # Enable flatpak
+    flatpak.enable = true;
   };
 
-  # Enable PipeWire
+  # Enable pipewire
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -119,8 +120,8 @@
       };
     };
 
-    # Enable Steam on x86_64 platforms
-    steam = lib.mkIf pkgs.stdenv.hostPlatform.isx86_64 {
+    # Enable Steam
+    steam = {
       enable = true;
       remotePlay.openFirewall = true;
     };
@@ -129,9 +130,19 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  fonts.packages = with pkgs; [
-    liberation_ttf
-  ];
+  fonts = {
+    packages = with pkgs; [
+      liberation_ttf
+    ];
+
+    fontconfig = {
+      defaultFonts = {
+        serif = [ "Liberation Serif" ];
+        sansSerif = [ "Liberation Sans" ];
+      };
+      subpixel.rgba = "rgb";
+    };
+  };
 
   # List packages installed in system profile
   environment.systemPackages =
@@ -156,9 +167,19 @@
       kdePackages.discover
       sddm-theme-config
       vesktop
-      #heroic
+      heroic
       obsidian
     ];
+
+  system.activationScripts.copySddmDisplayConfig.text = ''
+    source_file="/home/${user}/.config/kwinoutputconfig.json"
+    dest_file="/var/lib/sddm/.config/kwinoutputconfig.json"
+
+    if [ -f "$source_file" ]; then
+      cp "$source_file" "$dest_file"
+      chown sddm:sddm "$dest_file"
+    fi
+  '';
 
   system.stateVersion = "24.05"; # Don't change this
 }

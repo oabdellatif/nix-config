@@ -1,5 +1,8 @@
 { config, pkgs, user, ... }:
 
+let
+  wallpaper = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png";
+in
 {
   imports = [
     ../shared/home.nix
@@ -18,7 +21,7 @@
 
       workspace = {
         lookAndFeel = "org.kde.breezedark.desktop";
-        wallpaper = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png";
+        wallpaper = "${wallpaper}";
       };
 
       panels = [
@@ -50,6 +53,12 @@
           ];
         }
       ];
+
+      kscreenlocker.appearance.wallpaper = "${wallpaper}";
+
+      configFile = {
+        "discoverrc"."FlatpakSources"."Sources" = "flathub";
+      };
     };
 
     firefox = {
@@ -61,26 +70,8 @@
           order = [ "DuckDuckGo" "Google" ];
           force = true;
         };
-
-        settings = {
-          "font.name.sans-serif.x-western" = "Liberation Sans";
-          "font.name.serif.x-western" = "Liberation Serif";
-        };
       };
     };
-  };
-
-  home.file = {
-    "${config.xdg.configHome}/gtkrc".text = ''
-      include "/run/current-system/sw/share/themes/Breeze/gtk-2.0/gtkrc"
-
-      gtk-theme-name="Breeze"
-    '';
-
-    "${config.xdg.configHome}/discoverrc".text = ''
-      [FlatpakSources]
-      Sources=flathub
-    '';
   };
 
   home.stateVersion = "24.05";
