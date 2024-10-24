@@ -11,6 +11,7 @@
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "usbhid" "sd_mod" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.kernelModules = [ "kvm-amd" "amdgpu" ];
+  boot.kernelParams = [ "video=DP-2:2560x1440@165" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =

@@ -62,16 +62,28 @@ in
     };
 
     firefox = {
-      enable = true;
-
       profiles.default = {
-        search = {
-          default = "DuckDuckGo";
-          order = [ "DuckDuckGo" "Google" ];
-          force = true;
+        settings = {
+          "font.name.serif.x-western" = "Liberation Serif";
+          "font.name.sans-serif.x-western" = "Liberation Sans";
         };
       };
     };
+  };
+
+  xdg.mimeApps = {
+    enable = true;
+
+    defaultApplications =
+      let
+        defaultBrowser = "firefox.desktop";
+      in
+      {
+        "x-scheme-handler/http" = "${defaultBrowser}";
+        "x-scheme-handler/https" = "${defaultBrowser}";
+        "x-scheme-handler/chrome" = "${defaultBrowser}";
+        "text/html" = "${defaultBrowser}";
+      };
   };
 
   home.stateVersion = "24.05";

@@ -8,9 +8,13 @@
   home = {
     username = "${user}";
     homeDirectory = "/Users/${user}";
-
-    stateVersion = "24.05";
   };
 
-  programs.home-manager.enable = true;
+  programs = {
+    home-manager.enable = true;
+
+    firefox.package = pkgs.emptyDirectory;
+  };
+
+  home.stateVersion = "24.05";
 }

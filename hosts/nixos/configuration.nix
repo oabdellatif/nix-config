@@ -15,15 +15,31 @@
     };
 
     initrd = {
-      verbose = false;
       # Enable systemd in initrd
       systemd.enable = true;
       services.lvm.enable = true;
+
+      verbose = false;
+    };
+
+    plymouth = {
+      enable = true;
+
+      theme = "breeze";
+      logo = "${pkgs.nixos-icons}/share/icons/hicolor/128x128/apps/nix-snowflake-white.png";
+      themePackages = with pkgs; [
+        (kdePackages.breeze-plymouth.override {
+          logoFile = config.boot.plymouth.logo;
+          logoName = "nixos";
+          osName = "NixOS";
+          osVersion = config.system.nixos.release;
+        })
+      ];
     };
 
     # Enable silent boot
     consoleLogLevel = 3;
-    kernelParams = [ "quiet" "udev.log_level=3" ];
+    kernelParams = [ "quiet" "splash" "systemd.show_status=auto" "rd.udev.log_level=3" ];
   };
 
   # Enable zram swap
@@ -109,16 +125,7 @@
 
   programs = {
     # Install Firefox
-    firefox = {
-      enable = true;
-
-      policies = {
-        DisablePocket = true;
-        FirefoxHome = {
-          SponsoredTopSites = false;
-        };
-      };
-    };
+    firefox.enable = true;
 
     # Enable Steam
     steam = {
@@ -131,17 +138,8 @@
   nixpkgs.config.allowUnfree = true;
 
   fonts = {
-    packages = with pkgs; [
-      liberation_ttf
-    ];
-
-    fontconfig = {
-      defaultFonts = {
-        serif = [ "Liberation Serif" ];
-        sansSerif = [ "Liberation Sans" ];
-      };
-      subpixel.rgba = "rgb";
-    };
+    enableDefaultPackages = true;
+    fontconfig.subpixel.rgba = "rgb";
   };
 
   # List packages installed in system profile
@@ -168,6 +166,7 @@
       sddm-theme-config
       vesktop
       heroic
+      mangohud
       obsidian
     ];
 
