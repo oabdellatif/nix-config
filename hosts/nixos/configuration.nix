@@ -134,8 +134,24 @@
     };
   };
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs = {
+    # Allow unfree packages
+    config.allowUnfree = true;
+
+    # Overlay for signond OAuth2 plugin
+    overlays = [
+      (final: prev: {
+        kdePackages = prev.kdePackages // {
+          signon-plugin-oauth2 = final.kdePackages.callPackage ../../packages/signond/signon-plugin-oauth2.nix {};
+          signond = final.kdePackages.callPackage ../../packages/signond {
+            inherit (final.kdePackages) signon-plugin-oauth2;
+          };
+
+          signon-ui = final.kdePackages.callPackage ../../packages/signon-ui {};
+        };
+      })
+    ];
+  };
 
   fonts = {
     enableDefaultPackages = true;
@@ -160,7 +176,12 @@
       kdePackages.kdeconnect-kde
       kdePackages.kaccounts-integration
       kdePackages.kaccounts-providers
-      kdePackages.signond
+      (kdePackages.signond.override {
+        withOAuth2 = true;
+        withKWallet = true;
+      })
+      kdePackages.signon-plugin-oauth2
+      kdePackages.signon-ui
       kdePackages.kio-gdrive
       kdePackages.discover
       sddm-theme-config
