@@ -5,8 +5,6 @@
     ./hardware-configuration.nix
   ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
   boot = {
     # Bootloader
     loader = {
@@ -21,6 +19,9 @@
 
       verbose = false;
     };
+
+    # Use latest stable kernel
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_11;
 
     plymouth = {
       enable = true;
@@ -119,7 +120,7 @@
     description = "Omar Abdellatif";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      emacs-gtk
+      emacs29-pgtk
     ];
   };
 
@@ -142,7 +143,7 @@
     overlays = [
       (final: prev: {
         kdePackages = prev.kdePackages // {
-          signon-plugin-oauth2 = final.kdePackages.callPackage ../../packages/signond/signon-plugin-oauth2.nix {};
+          signon-plugin-oauth2 = final.kdePackages.callPackage ../../packages/signon-plugin-oauth2 {};
           signond = final.kdePackages.callPackage ../../packages/signond {
             inherit (final.kdePackages) signon-plugin-oauth2;
           };
@@ -159,39 +160,40 @@
   };
 
   # List packages installed in system profile
-  environment.systemPackages =
-    let
-      sddm-theme-config = pkgs.writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
-        [General]
-        background = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png"
+  environment.systemPackages = let
+    sddm-theme-config = pkgs.writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
+      [General]
+      background = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png"
     '';
-    in
-    with pkgs; [
-      vim
-      wget
-      git
-      unzip
-      p7zip
-      kdePackages.kate
-      kdePackages.kdeconnect-kde
-      kdePackages.kaccounts-integration
-      kdePackages.kaccounts-providers
-      (kdePackages.signond.override {
-        withOAuth2 = true;
-        withKWallet = true;
-      })
-      kdePackages.signon-plugin-oauth2
-      kdePackages.signon-ui
-      kdePackages.kio-gdrive
-      kdePackages.discover
-      sddm-theme-config
-      vesktop
-      heroic
-      mangohud
-      obsidian
-    ];
+  in with pkgs; [
+    vim
+    wget
+    git
+    unzip
+    p7zip
+    rclone
+    kdePackages.kaccounts-integration
+    kdePackages.kaccounts-providers
+    (kdePackages.signond.override {
+      withOAuth2 = true;
+      withKWallet = true;
+    })
+    kdePackages.signon-plugin-oauth2
+    kdePackages.signon-ui
+    kdePackages.kio-gdrive
+    kdePackages.kate
+    kdePackages.kdeconnect-kde
+    kdePackages.discover
+    sddm-theme-config
+    kde-rounded-corners
+    haruna
+    vesktop
+    heroic
+    mangohud
+    obsidian
+  ];
 
-  system.activationScripts.copySddmDisplayConfig.text = ''
+  system.activationScripts.sddmCopyDisplayConfig.text = ''
     source_file="/home/${user}/.config/kwinoutputconfig.json"
     dest_file="/var/lib/sddm/.config/kwinoutputconfig.json"
 
@@ -200,6 +202,8 @@
       chown sddm:sddm "$dest_file"
     fi
   '';
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   system.stateVersion = "24.05"; # Don't change this
 }

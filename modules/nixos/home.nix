@@ -1,7 +1,12 @@
-{ config, pkgs, user, ... }:
+{ config, lib, pkgs, user, ... }:
 
 let
   wallpaper = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png";
+  windowExceptions = [
+    "steam"
+    "vesktop"
+    "obsidian"
+  ];
 in
 {
   imports = [
@@ -56,8 +61,64 @@ in
 
       kscreenlocker.appearance.wallpaper = "${wallpaper}";
 
-      configFile = {
+      window-rules = let
+      in map (app: {
+        description = "Settings for ${app}";
+        match.window-class = {
+          match-whole = false;
+          value = app;
+        };
+        apply."noborder" = {
+          apply = "force";
+          value = false;
+        };
+      }) windowExceptions;
+
+      configFile = let
+        windowExceptionAttrs = builtins.listToAttrs (
+          builtins.genList (i: {
+            name = "Windeco Exception ${toString i}";
+            value = {
+              "BorderSize" = 0;
+              "Enabled" = true;
+              "ExceptionPattern" = builtins.elemAt windowExceptions i;
+              "ExceptionType" = 0;
+              "HideTitleBar" = true;
+              "Mask" = 16;
+            };
+          }) (builtins.length windowExceptions)
+        );
+      in
+      {
         "discoverrc"."FlatpakSources"."Sources" = "flathub";
+        "breezerc" = windowExceptionAttrs // {
+          "Common"."OutlineIntensity" = "OutlineOff";
+        };
+
+        "kwinrc" = {
+          "PrimaryOutline" = {
+            "ActiveOutlinePalette" = 2;
+            "ActiveOutlineUseCustom" = "false";
+            "ActiveOutlineUsePalette" = true;
+            "InactiveOutlinePalette" = 2;
+            "InactiveOutlineThickness" = 0.75;
+            "InactiveOutlineUseCustom" = false;
+            "InactiveOutlineUsePalette" = true;
+            "OutlineThickness" = 0.75;
+          };
+
+          "SecondOutline" = {
+            "InactiveSecondOutlineThickness" = 0;
+            "SecondOutlineThickness" = 0;
+          };
+
+          "Round-Corners" = {
+            "InactiveCornerRadius" = 8;
+            "InactiveShadowSize" = 40;
+            "ShadowSize" = 50;
+            "Size" = 8;
+          };
+        };
       };
     };
 
@@ -74,16 +135,33 @@ in
   xdg.mimeApps = {
     enable = true;
 
-    defaultApplications =
-      let
-        defaultBrowser = "firefox.desktop";
-      in
-      {
-        "x-scheme-handler/http" = "${defaultBrowser}";
-        "x-scheme-handler/https" = "${defaultBrowser}";
-        "x-scheme-handler/chrome" = "${defaultBrowser}";
-        "text/html" = "${defaultBrowser}";
-      };
+    defaultApplications = let
+      defaultBrowser = "firefox.desktop";
+    in
+    {
+      "x-scheme-handler/http" = "${defaultBrowser}";
+      "x-scheme-handler/https" = "${defaultBrowser}";
+      "x-scheme-handler/chrome" = "${defaultBrowser}";
+      "text/html" = "${defaultBrowser}";
+    };
+  };
+
+  systemd.user.services.drive-mount = {
+    Unit = {
+      Description = "Mount remote Google Drive with rclone";
+      After = [ "network-online.target" ];
+    };
+
+    Service = {
+      Type = "notify";
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/Google\\x20Drive";
+      ExecStart = "${pkgs.rclone}/bin/rclone mount oahabdellatif@gmail.com: %h/Google\\x20Drive --vfs-cache-mode=full --vfs-cache-max-age 30d";
+      ExecStop = "${pkgs.fuse}/bin/fusermount -u %h/Google\\x20Drive";
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
+
+    Install.WantedBy = [ "default.target" ];
   };
 
   home.stateVersion = "24.05";
