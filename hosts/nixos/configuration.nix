@@ -159,39 +159,44 @@
     fontconfig.subpixel.rgba = "rgb";
   };
 
-  # List packages installed in system profile
-  environment.systemPackages = let
-    sddm-theme-config = pkgs.writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
-      [General]
-      background = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png"
-    '';
-  in with pkgs; [
-    vim
-    wget
-    git
-    unzip
-    p7zip
-    rclone
-    kdePackages.kaccounts-integration
-    kdePackages.kaccounts-providers
-    (kdePackages.signond.override {
-      withOAuth2 = true;
-      withKWallet = true;
-    })
-    kdePackages.signon-plugin-oauth2
-    kdePackages.signon-ui
-    kdePackages.kio-gdrive
-    kdePackages.kate
-    kdePackages.kdeconnect-kde
-    kdePackages.discover
-    sddm-theme-config
-    kde-rounded-corners
-    haruna
-    vesktop
-    heroic
-    mangohud
-    obsidian
-  ];
+  environment = {
+    # Enable Wayland for Electron
+    sessionVariables.NIXOS_OZONE_WL = "1";
+
+    # List packages installed in system profile
+    systemPackages = let
+      sddm-theme-config = pkgs.writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
+        [General]
+        background = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Next/contents/images_dark/2560x1600.png"
+      '';
+    in with pkgs; [
+      vim
+      wget
+      git
+      unzip
+      p7zip
+      rclone
+      kdePackages.kaccounts-integration
+      kdePackages.kaccounts-providers
+      (kdePackages.signond.override {
+        withOAuth2 = true;
+        withKWallet = true;
+      })
+      kdePackages.signon-plugin-oauth2
+      kdePackages.signon-ui
+      kdePackages.kio-gdrive
+      kdePackages.kate
+      kdePackages.kdeconnect-kde
+      kdePackages.discover
+      sddm-theme-config
+      kde-rounded-corners
+      haruna
+      vesktop
+      heroic
+      mangohud
+      obsidian
+    ];
+  };
 
   system.activationScripts.sddmCopyDisplayConfig.text = ''
     source_file="/home/${user}/.config/kwinoutputconfig.json"

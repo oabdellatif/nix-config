@@ -1,7 +1,7 @@
 { config, lib, pkgs, user, ... }:
 
 let
-  wallpaper = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png";
+  wallpaper = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Next/contents/images_dark/2560x1600.png";
   windowExceptions = [
     "steam"
     "vesktop"
@@ -91,6 +91,7 @@ in
       in
       {
         "discoverrc"."FlatpakSources"."Sources" = "flathub";
+
         "breezerc" = windowExceptionAttrs // {
           "Common"."OutlineIntensity" = "OutlineOff";
         };
@@ -98,21 +99,24 @@ in
         "kwinrc" = {
           "PrimaryOutline" = {
             "ActiveOutlinePalette" = 2;
-            "ActiveOutlineUseCustom" = "false";
+            "ActiveOutlineUseCustom" = false;
             "ActiveOutlineUsePalette" = true;
             "InactiveOutlinePalette" = 2;
-            "InactiveOutlineThickness" = 0.75;
+            "InactiveOutlineThickness" = 1.25;
             "InactiveOutlineUseCustom" = false;
             "InactiveOutlineUsePalette" = true;
-            "OutlineThickness" = 0.75;
+            "OutlineThickness" = 1.25;
           };
-
           "SecondOutline" = {
             "InactiveSecondOutlineThickness" = 0;
             "SecondOutlineThickness" = 0;
           };
-
-          "Round-Corners" = {
+          "Shadow" = {
+            "ActiveShadowAlpha" = 104;
+            "InactiveShadowAlpha" = 80;
+          };
+          # FIXME: Remove the symbol later
+          "ًRound-Corners" = {
             "InactiveCornerRadius" = 8;
             "InactiveShadowSize" = 40;
             "ShadowSize" = 50;
