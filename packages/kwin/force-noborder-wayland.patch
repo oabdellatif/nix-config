@@ -1,0 +1,13 @@
+diff --git a/src/xdgshellwindow.cpp b/src/xdgshellwindow.cpp
+index 40e00ab..0418551 100644
+--- a/src/xdgshellwindow.cpp
++++ b/src/xdgshellwindow.cpp
+@@ -1380,6 +1380,8 @@ XdgToplevelWindow::DecorationMode XdgToplevelWindow::preferredDecorationMode() c
+         return DecorationMode::Client;
+     } else if (m_userNoBorder || isRequestedFullScreen()) {
+         return DecorationMode::None;
++    } else if (!rules()->checkNoBorder(true)) {
++        return DecorationMode::Server;
+     }
+ 
+     if (m_xdgDecoration) {

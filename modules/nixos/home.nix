@@ -1,12 +1,8 @@
 { config, lib, pkgs, user, ... }:
 
 let
-  wallpaper = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Next/contents/images_dark/2560x1600.png";
-  windowExceptions = [
-    "steam"
-    "vesktop"
-    "obsidian"
-  ];
+  wallpaper = "${pkgs.kdePackages.breeze}/share/wallpapers/Next/contents/images_dark/2560x1600.png";
+  exceptionPattern = "(steam|vesktop|obsidian|heroic)";
 in
 {
   imports = [
@@ -61,39 +57,43 @@ in
 
       kscreenlocker.appearance.wallpaper = "${wallpaper}";
 
-      window-rules = let
-      in map (app: {
-        description = "Settings for ${app}";
-        match.window-class = {
-          match-whole = false;
-          value = app;
+      kwin.nightLight = {
+        mode = "location";
+        location = {
+          latitude = "34.85";
+          longitude = "-82.39";
         };
-        apply."noborder" = {
-          apply = "force";
-          value = false;
-        };
-      }) windowExceptions;
+      };
 
-      configFile = let
-        windowExceptionAttrs = builtins.listToAttrs (
-          builtins.genList (i: {
-            name = "Windeco Exception ${toString i}";
-            value = {
-              "BorderSize" = 0;
-              "Enabled" = true;
-              "ExceptionPattern" = builtins.elemAt windowExceptions i;
-              "ExceptionType" = 0;
-              "HideTitleBar" = true;
-              "Mask" = 16;
-            };
-          }) (builtins.length windowExceptions)
-        );
-      in
-      {
+      window-rules = [
+        {
+          description = "Force shadows on CSD windows";
+          match.window-class = {
+            type = "regex";
+            match-whole = false;
+            value = exceptionPattern;
+          };
+
+          apply."noborder" = {
+            apply = "force";
+            value = false;
+          };
+        }
+      ];
+
+      configFile = {
         "discoverrc"."FlatpakSources"."Sources" = "flathub";
 
-        "breezerc" = windowExceptionAttrs // {
+        "breezerc" = {
           "Common"."OutlineIntensity" = "OutlineOff";
+          "Windeco Exception 0" = {
+            "BorderSize" = 0;
+            "Enabled" = true;
+            "ExceptionPattern" = exceptionPattern;
+            "ExceptionType" = 0;
+            "HideTitleBar" = true;
+            "Mask" = 16;
+          };
         };
 
         "kwinrc" = {
@@ -166,6 +166,47 @@ in
     };
 
     Install.WantedBy = [ "default.target" ];
+  };
+
+  home.file = {
+    "${config.xdg.configHome}/autostart/steam.desktop".text = ''
+      [Desktop Entry]
+      Name=Steam
+      Comment=Application for managing and playing games on Steam
+      Exec=steam %U -silent
+      Icon=steam
+      Terminal=false
+      Type=Application
+      Categories=Network;FileTransfer;Game;
+      MimeType=x-scheme-handler/steam;x-scheme-handler/steamlink;
+      Actions=Store;Community;Library;Servers;Screenshots;News;Settings;BigPicture;Friends;
+      PrefersNonDefaultGPU=true
+      X-KDE-RunOnDiscreteGpu=true
+    '';
+
+    "${config.xdg.configHome}/autostart/vesktop.desktop".text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Vesktop
+      Comment=Vesktop autostart script
+      Exec="/nix/store/2ayryq3clabcblbj2ipbvcrp31h9lknx-electron-33.0.0/bin/electron" "/nix/store/z6c1gpzclnfsmb1k44my7qd5g2w8lc5y-vesktop-1.5.3/opt/Vesktop/resources/app.asar" "--enable-speech-dispatcher" "--ozone-platform-hint=auto" "--enable-features=WaylandWindowDecorations" "--enable-wayland-ime" "--start-minimized"
+      StartupNotify=false
+      Terminal=false
+    '';
+
+    "${config.xdg.configHome}/autostart/heroic.desktop".text = ''
+      [Desktop Entry]
+      Name=Heroic Games Launcher
+      Exec=heroic %u
+      Terminal=false
+      Type=Application
+      Icon=com.heroicgameslauncher.hgl
+      StartupWMClass=Heroic
+      Comment=An Open Source GOG and Epic Games launcher
+      Comment[de]=Ein Open Source Spielelauncher for GOG und Epic Games
+      MimeType=x-scheme-handler/heroic;
+      Categories=Game;
+    '';
   };
 
   home.stateVersion = "24.05";

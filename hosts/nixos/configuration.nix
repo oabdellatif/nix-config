@@ -102,6 +102,12 @@
 
     # Enable flatpak
     flatpak.enable = true;
+
+    # Enable OpenRGB
+    hardware.openrgb = {
+      enable = true;
+      package = pkgs.openrgb-with-all-plugins;
+    };
   };
 
   # Enable pipewire
@@ -118,7 +124,7 @@
   users.users.${user} = {
     isNormalUser = true;
     description = "Omar Abdellatif";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "gamemode" ];
     packages = with pkgs; [
       emacs29-pgtk
     ];
@@ -128,10 +134,22 @@
     # Install Firefox
     firefox.enable = true;
 
-    # Enable Steam
+    # Install Steam
     steam = {
       enable = true;
       remotePlay.openFirewall = true;
+    };
+
+    # Enable GameMode
+    gamemode = {
+      enable = true;
+      settings = {
+        gpu = {
+          apply_gpu_optimisations = "accept-responsibility";
+          gpu_device = 1;
+          amd_performance_level = "high";
+        };
+      };
     };
   };
 
@@ -139,16 +157,23 @@
     # Allow unfree packages
     config.allowUnfree = true;
 
-    # Overlay for signond OAuth2 plugin
     overlays = [
+      # Missing packages for KIO GDrive
       (final: prev: {
         kdePackages = prev.kdePackages // {
           signon-plugin-oauth2 = final.kdePackages.callPackage ../../packages/signon-plugin-oauth2 {};
           signond = final.kdePackages.callPackage ../../packages/signond {
             inherit (final.kdePackages) signon-plugin-oauth2;
           };
-
           signon-ui = final.kdePackages.callPackage ../../packages/signon-ui {};
+        };
+      })
+      # Force noborder on Wayland
+      (final: prev: {
+        kdePackages = prev.kdePackages // {
+          kwin = prev.kdePackages.kwin.overrideAttrs (attrs: {
+            patches = attrs.patches ++ [ ../../packages/kwin/force-noborder-wayland.patch ];
+          });
         };
       })
     ];
@@ -160,14 +185,14 @@
   };
 
   environment = {
-    # Enable Wayland for Electron
+    # Enable Ozone Wayland support
     sessionVariables.NIXOS_OZONE_WL = "1";
 
     # List packages installed in system profile
     systemPackages = let
       sddm-theme-config = pkgs.writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
         [General]
-        background = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Next/contents/images_dark/2560x1600.png"
+        background = "${pkgs.kdePackages.breeze}/share/wallpapers/Next/contents/images_dark/2560x1600.png"
       '';
     in with pkgs; [
       vim
@@ -193,8 +218,8 @@
       haruna
       vesktop
       heroic
-      mangohud
       obsidian
+      mangohud
     ];
   };
 
