@@ -20,8 +20,8 @@
       verbose = false;
     };
 
-    # Use latest stable kernel
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_11;
+    # Use latest Zen kernel
+    kernelPackages = pkgs.linuxPackages_zen;
 
     plymouth = {
       enable = true;
@@ -48,7 +48,7 @@
 
   # Define hostname and enable networking
   networking = {
-    hostName = "nixos";
+    hostName = "omar-desktop";
     networkmanager.enable = true;
   };
 
