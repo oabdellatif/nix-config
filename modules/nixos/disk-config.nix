@@ -41,14 +41,21 @@ _: {
         type = "lvm_vg";
         lvs = {
           root = {
-            size = "100G";
+            size = "10G";
             content = {
               type = "filesystem";
               format = "ext4";
               mountpoint = "/";
-              mountOptions = [
-                "defaults"
-              ];
+              mountOptions = [ "defaults" ];
+            };
+          };
+          nix = {
+            size = "100G";
+            content = {
+              type = "filesystem";
+              format = "ext4";
+              mountpoint = "/nix";
+              mountOptions = [ "noatime" ];
             };
           };
           home = {
